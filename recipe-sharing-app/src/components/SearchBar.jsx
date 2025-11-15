@@ -1,4 +1,4 @@
-// File: src/components/SearchBar.jsx
+
 import React, { useEffect } from 'react';
 import useRecipeStore from '../store/recipeStore';
 

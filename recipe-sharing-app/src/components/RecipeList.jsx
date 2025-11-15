@@ -1,8 +1,9 @@
-// File: src/components/RecipeList.jsx
+
 import { Link } from 'react-router-dom';
 import useRecipeStore from '../store/recipeStore';
 import EditRecipeForm from './EditRecipeForm';
 import DeleteRecipeButton from './DeleteRecipeButton';
+import FavoriteButton from './FavoriteButton';
 
 const RecipeList = () => {
   const recipes = useRecipeStore(state => state.filteredRecipes.length > 0 ? state.filteredRecipes : state.recipes);
@@ -20,6 +21,7 @@ const RecipeList = () => {
           <div className="flex gap-2 mt-2">
             <EditRecipeForm recipe={recipe} />
             <DeleteRecipeButton recipeId={recipe.id} />
+            <FavoriteButton recipeId={recipe.id} />
           </div>
         </div>
       ))}
