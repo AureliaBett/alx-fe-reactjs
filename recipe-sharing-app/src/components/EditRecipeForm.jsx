@@ -8,8 +8,8 @@ const EditRecipeForm = ({ recipe, onClose }) => {
   const [title, setTitle] = useState(recipe.title)
   const [description, setDescription] = useState(recipe.description || '')
 
-  const handleSubmit = (e) => {
-    e.preventDefault()  // ensure form doesn't refresh the page
+  const handleSubmit = (event) => {
+    event.preventDefault()  // ensure form doesn't refresh the page
     updateRecipe(recipe.id, { title: title.trim(), description })
     setEditing(false)
     if(onClose) onClose()
