@@ -1,30 +1,27 @@
 // File: src/App.jsx
-import { useState } from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import RecipeList from './components/RecipeList'
-import AddRecipeForm from './components/AddRecipeForm'
-import RecipeDetails from './components/RecipeDetails'
-import DeleteRecipeButton from './components/DeleteRecipeButton'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import AddRecipeForm from './components/AddRecipeForm';
+import RecipeList from './components/RecipeList';
+import RecipeDetails from './components/RecipeDetails';
+import SearchBar from './components/SearchBar';
 
 function App() {
-  const [description, setDescription] = useState('');
-
   return (
     <Router>
-      <div>
-        <div style={{ backgroundColor: "lightblue", padding: "50px" }}>
+      <div className="container mx-auto p-4">
+        <div className="mb-6 p-6 bg-blue-200 rounded">
+          <h1 className="text-2xl font-bold mb-4">Recipe App</h1>
           <AddRecipeForm />
+          <SearchBar />
         </div>
-        <div style={{ backgroundColor: "blue", padding: "50px" }}>
-          <Routes>
-            <Route path="/" element={<RecipeList />} />
-            <Route path="/recipes/:id" element={<RecipeDetails />} />
-          </Routes>
-        </div>
+
+        <Routes>
+          <Route path="/" element={<RecipeList />} />
+          <Route path="/recipes/:id" element={<RecipeDetails />} />
+        </Routes>
       </div>
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;
