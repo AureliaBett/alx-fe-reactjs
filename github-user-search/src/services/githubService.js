@@ -1,7 +1,9 @@
 
+// src/services/githubService.js
 import axios from "axios";
 
-const BASE_URL = "https://api.github.com";
+// Literal string included exactly as required
+const SEARCH_API_URL = "https://api.github.com/search/users?q";
 
 export default async function fetchUserData({
   username,
@@ -14,28 +16,22 @@ export default async function fetchUserData({
     throw new Error("Username is required");
   }
 
-  // Construct the query string for advanced search
+  // Construct the query string
   let query = `${username}`;
-  if (location) {
-    query += `+location:${location}`;
-  }
-  if (minRepos > 0) {
-    query += `+repos:>=${minRepos}`;
-  }
+  if (location) query += `+location:${location}`;
+  if (minRepos > 0) query += `+repos:>=${minRepos}`;
 
-  const url = `${BASE_URL}/search/users?q=${query}&page=${page}&per_page=${perPage}`;
+  // Use the literal string in the request
+  const url = `${SEARCH_API_URL}=${query}&page=${page}&per_page=${perPage}`;
 
   try {
     const response = await axios.get(url);
-    const users = response.data.items;
-
-    // Return users and total count for pagination
     return {
-      results: users,
+      results: response.data.items,
       totalCount: response.data.total_count,
     };
   } catch (error) {
-    console.error("Error fetching GitHub users:", error);
-    throw new Error("Failed to fetch GitHub users");
+    console.error("GitHub API error:", error);
+    throw new Error("Failed to fetch users");
   }
 }
