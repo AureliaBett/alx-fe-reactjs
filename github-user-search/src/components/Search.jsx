@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import fetchUserData from "../services/githubService";
 
@@ -5,48 +6,71 @@ export default function Search() {
   const [username, setUsername] = useState("");
   const [location, setLocation] = useState("");
   const [minRepos, setMinRepos] = useState("");
-  const [user, setUser] = useState(null);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [page, setPage] = useState(1); // current page for pagination
+  const [hasMore, setHasMore] = useState(false); // whether there are more results
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!username.trim()) return;
+    if (!username) return;
 
     setLoading(true);
     setError("");
-    setUser(null);
+    setUsers([]);
+    setPage(1);
 
-    const data = await fetchUserData(username);
-
-    if (!data) {
-      setError("Looks like we can't find the user");
-    } else if (
-      (location && data.location?.toLowerCase().indexOf(location.toLowerCase()) === -1) ||
-      (minRepos && data.public_repos < parseInt(minRepos))
-    ) {
-      setError("No users matched the additional criteria");
-    } else {
-      setUser(data);
+    try {
+      const { results, totalCount } = await fetchUserData({
+        username,
+        location,
+        minRepos: minRepos ? parseInt(minRepos) : 0,
+        page: 1,
+      });
+      if (results.length === 0) {
+        setError("Looks like we can't find any users");
+      }
+      setUsers(results);
+      setHasMore(results.length < totalCount);
+    } catch (err) {
+      setError("Failed to fetch users. Try again later.");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    setLoading(false);
+  const loadMore = async () => {
+    const nextPage = page + 1;
+    setLoading(true);
+
+    try {
+      const { results, totalCount } = await fetchUserData({
+        username,
+        location,
+        minRepos: minRepos ? parseInt(minRepos) : 0,
+        page: nextPage,
+      });
+      setUsers((prev) => [...prev, ...results]);
+      setPage(nextPage);
+      setHasMore(users.length + results.length < totalCount);
+    } catch (err) {
+      setError("Failed to load more users");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-4 border rounded-lg shadow-lg bg-white">
+    <div className="max-w-3xl mx-auto mt-10 p-6 border rounded-lg shadow-lg bg-white">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {/* Username */}
         <input
           type="text"
-          placeholder="Enter GitHub username"
+          placeholder="GitHub username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-
-        {/* Location */}
         <input
           type="text"
           placeholder="Location (optional)"
@@ -54,18 +78,13 @@ export default function Search() {
           onChange={(e) => setLocation(e.target.value)}
           className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-
-        {/* Minimum Repositories */}
         <input
           type="number"
           placeholder="Minimum Repositories (optional)"
           value={minRepos}
           onChange={(e) => setMinRepos(e.target.value)}
           className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          min="0"
         />
-
-        {/* Submit Button */}
         <button
           type="submit"
           className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"
@@ -74,29 +93,47 @@ export default function Search() {
         </button>
       </form>
 
-      {/* Loading */}
-      {loading && <p className="mt-4 text-gray-600">Loading...</p>}
+      <div className="mt-6">
+        {loading && <p className="text-gray-500">Loading...</p>}
+        {error && <p className="text-red-500">{error}</p>}
 
-      {/* Error */}
-      {error && <p className="mt-4 text-red-500">{error}</p>}
-
-      {/* User Info */}
-      {user && (
-        <div className="mt-6 flex flex-col items-center gap-2 border-t pt-4">
-          <img src={user.avatar_url} alt="user avatar" className="w-32 rounded-full" />
-          <h2 className="text-xl font-semibold">{user.name || user.login}</h2>
-          <p className="text-gray-700">{user.bio}</p>
-          {user.location && <p className="text-gray-600">Location: {user.location}</p>}
-          <p className="text-gray-600">Repos: {user.public_repos}</p>
-          <a
-            href={user.html_url}
-            target="_blank"
-            className="text-blue-500 hover:underline"
+        {users.map((user) => (
+          <div
+            key={user.id}
+            className="border p-4 rounded mb-4 flex items-center gap-4"
           >
-            View GitHub Profile
-          </a>
-        </div>
-      )}
+            <img
+              src={user.avatar_url}
+              alt={user.login}
+              className="w-16 rounded-full"
+            />
+            <div>
+              <h2 className="font-semibold text-lg">{user.login}</h2>
+              {user.location && <p className="text-gray-700">{user.location}</p>}
+              <p className="text-gray-700">
+                Public Repos: {user.public_repos ?? "N/A"}
+              </p>
+              <a
+                href={user.html_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:underline"
+              >
+                View Profile
+              </a>
+            </div>
+          </div>
+        ))}
+
+        {hasMore && !loading && (
+          <button
+            onClick={loadMore}
+            className="bg-gray-200 text-gray-800 p-2 rounded hover:bg-gray-300 transition-colors mt-2"
+          >
+            Load More
+          </button>
+        )}
+      </div>
     </div>
   );
 }
