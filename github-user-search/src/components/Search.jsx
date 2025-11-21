@@ -29,7 +29,7 @@ export default function Search() {
         page: 1,
       });
       if (results.length === 0) {
-        setError("Looks like we can't find any users");
+        setError("Looks like we cant find the user");
       }
       setUsers(results);
       setHasMore(results.length < totalCount);
