@@ -10,7 +10,7 @@ function HomePage() {
 );
 
   return (
-    <div className="recipeCard bg-gray-1000 sm:p-4 md:p-8 sm: text-lg md:text-xl max-w-sm max-auto my-20 rounded-lg shadow-lg">
+    <div className="recipeCard grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 bg-gray-1000 sm:p-4 md:p-8 sm: text-lg md:text-xl max-w-sm max-auto my-20 rounded-lg shadow-lg">
         <div>
             <h1> Recipe Sharing App</h1>
             <p>Cook to your hearts desires with our Recipes</p>
