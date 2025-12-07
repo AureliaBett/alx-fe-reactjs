@@ -98,7 +98,7 @@ function AddRecipeForm() {
             onChange={(e) => setSteps(e.target.value)}
           ></textarea>
           {errors.steps && (
-            <p className="text-red-600 text-sm mt-1">{errors.steps}</p>
+            <p className="text-red-600 md text-sm mt-1">{errors.steps}</p>
           )}
         </label>
 
