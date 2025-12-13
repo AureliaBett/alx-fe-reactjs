@@ -1,4 +1,5 @@
 import { useState } from "react";
+import AddTodoForm from "./AddTodoForm";
 
 const initialTodos = [
   { id: 1, text: "Learn React", completed: false },
@@ -7,16 +8,9 @@ const initialTodos = [
 
 const TodoList = () => {
   const [todos, setTodos] = useState(initialTodos);
-  const [newTodo, setNewTodo] = useState("");
 
-  const addTodo = (e) => {
-    e.preventDefault();
-    if (!newTodo.trim()) return;
-    setTodos([
-      ...todos,
-      { id: Date.now(), text: newTodo.trim(), completed: false },
-    ]);
-    setNewTodo("");
+  const addTodo = (text) => {
+    setTodos([...todos, { id: Date.now(), text, completed: false }]);
   };
 
   const toggleTodo = (id) => {
@@ -34,15 +28,7 @@ const TodoList = () => {
   return (
     <div>
       <h2>Todo List</h2>
-      <form onSubmit={addTodo}>
-        <input
-          type="text"
-          placeholder="Add todo"
-          value={newTodo}
-          onChange={(e) => setNewTodo(e.target.value)}
-        />
-        <button type="submit">Add</button>
-      </form>
+      <AddTodoForm onAdd={addTodo} />
 
       <ul>
         {todos.map((todo) => (
@@ -56,7 +42,13 @@ const TodoList = () => {
             data-testid={`todo-${todo.id}`}
           >
             {todo.text}{" "}
-            <button onClick={(e) => { e.stopPropagation(); deleteTodo(todo.id); }} data-testid={`delete-${todo.id}`}>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                deleteTodo(todo.id);
+              }}
+              data-testid={`delete-${todo.id}`}
+            >
               Delete
             </button>
           </li>
