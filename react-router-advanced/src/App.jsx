@@ -3,7 +3,8 @@ import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import BlogPost from "./pages/BlogPost";
 import Login from "./pages/Login";
-import ProtectedRoute from "./routes/ProtectedRoute";
+import ProtectedRoute from "./components/ProtectedRoute";
+
 
 function App() {
   return (
