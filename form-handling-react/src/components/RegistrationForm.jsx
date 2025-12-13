@@ -1,51 +1,39 @@
 import { useState } from "react";
 
 const RegistrationForm = () => {
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
-  });
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const [errors, setErrors] = useState("");
-
-  // Handle input change
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  // Basic validation
-  const validate = () => {
-    if (!formData.username || !formData.email || !formData.password) {
-      setErrors("All fields are required");
-      return false;
-    }
-    setErrors("");
-    return true;
-  };
-
-  // Submit handler
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validate()) return;
+    // Basic validation
+    if (!username || !email || !password) {
+      setError("All fields are required");
+      return;
+    }
 
-    // Mock API request
+    setError("");
+
+    const userData = { username, email, password };
+
     try {
-      const response = await fetch("https://jsonplaceholder.typicode.com/posts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        "https://jsonplaceholder.typicode.com/posts",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userData),
+        }
+      );
 
       const data = await response.json();
       console.log("User registered:", data);
       alert("Registration successful!");
-    } catch (error) {
-      console.error("Error:", error);
+    } catch (err) {
+      console.error("Registration failed", err);
     }
   };
 
@@ -53,15 +41,15 @@ const RegistrationForm = () => {
     <form onSubmit={handleSubmit}>
       <h2>Register (Controlled Form)</h2>
 
-      {errors && <p style={{ color: "red" }}>{errors}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
 
       <div>
         <label>Username</label>
         <input
           type="text"
           name="username"
-          value={formData.username}
-          onChange={handleChange}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         />
       </div>
 
@@ -70,8 +58,8 @@ const RegistrationForm = () => {
         <input
           type="email"
           name="email"
-          value={formData.email}
-          onChange={handleChange}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
       </div>
 
@@ -80,8 +68,8 @@ const RegistrationForm = () => {
         <input
           type="password"
           name="password"
-          value={formData.password}
-          onChange={handleChange}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
       </div>
 
